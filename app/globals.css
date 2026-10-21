@@ -1,26 +1,368 @@
 @import "tailwindcss";
 
+/* ==========================================================================
+   PlotEdu — "The Plan Sheet" (PRD §6)
+   One theme for the whole app. Dark is the brand default; Light is the
+   reading mode; System follows the OS. Pref lives on <html data-theme-pref>.
+   ========================================================================== */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --ink: #0f1a2b;
+  --surface: #14223a;
+  --surface-2: #192a45;
+  --surface-3: #203352;
+  --fg: #f3eee3;
+  --fg-soft: #d9d3c6;
+  --muted: #95a3b9;
+  --accent: #f2a626;
+  --accent-hover: #f6b84a;
+  --accent-ink: #f2a626; /* saffron used as text */
+  --on-accent: #0f1a2b;
+  --line: #22324c;
+  --line-strong: #34486a;
+  --grid: rgb(154 168 190 / 0.06);
+  --success: #4cb782;
+  --danger: #e5664f;
+  --highlight: rgb(255 255 255 / 0.045); /* inner top edge on raised surfaces */
+  --shadow: 0 1px 0 rgb(0 0 0 / 0.25), 0 12px 32px -16px rgb(0 0 0 / 0.55);
+  --grain-opacity: 0.04;
+  color-scheme: dark;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+@utility theme-light {
+  --ink: #f5f1e8;
+  --surface: #fffdf8;
+  --surface-2: #f8f4ea;
+  --surface-3: #efe9db;
+  --fg: #0f1a2b;
+  --fg-soft: #273449;
+  --muted: #5b6779;
+  --accent: #c77f0a;
+  --accent-hover: #b37208;
+  /* PRD deep saffron is ~2.9:1 on paper as text; this passes AA (~5.6:1). */
+  --accent-ink: #8f5a00;
+  --on-accent: #0f1a2b;
+  --line: #e2dacb;
+  --line-strong: #cbbfa8;
+  --grid: rgb(15 26 43 / 0.05);
+  --success: #2e8a5f;
+  --danger: #c2412d;
+  --highlight: rgb(255 255 255 / 0.7);
+  --shadow: 0 1px 0 rgb(15 26 43 / 0.04), 0 12px 32px -18px rgb(15 26 43 / 0.25);
+  --grain-opacity: 0.02;
+  color-scheme: light;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+html[data-theme-pref="light"] {
+  @apply theme-light;
+}
+@media (prefers-color-scheme: light) {
+  html[data-theme-pref="system"] {
+    @apply theme-light;
   }
 }
 
+@theme inline {
+  --color-ink: var(--ink);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-fg: var(--fg);
+  --color-fg-soft: var(--fg-soft);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-ink: var(--accent-ink);
+  --color-on-accent: var(--on-accent);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-success: var(--success);
+  --color-danger: var(--danger);
+
+  /* Type system
+     - Display: Archivo, expanded width (wdth axis) — the poster voice.
+     - Text: Instrument Sans — crisp, contemporary, not a default.
+     - Serif: Newsreader — leads and definitions; a reference-book register.
+     - Mono: IBM Plex Mono — survey metadata only, used sparingly. */
+  --font-display: var(--font-archivo), "Arial Black", sans-serif;
+  --font-sans: var(--font-instrument), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-newsreader), Georgia, serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, monospace;
+
+  /* Soft radii for interactive UI; plot frames stay sharp on purpose. */
+  --radius-control: 10px;
+  --radius-card: 14px;
+
+  --ease-out-plot: cubic-bezier(0.22, 1, 0.36, 1);
+  --container-content: 1120px;
+  --container-reading: 720px;
+}
+
+/* ---------------------------------------------------------------------------
+   Base
+   --------------------------------------------------------------------------- */
+html {
+  -webkit-text-size-adjust: 100%;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--ink);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.6;
+  min-height: 100dvh;
+}
+
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+p {
+  text-wrap: pretty;
+}
+
+/* Film grain: depth without gloss. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 100;
+  opacity: var(--grain-opacity);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ---------------------------------------------------------------------------
+   Type scale
+   --------------------------------------------------------------------------- */
+@utility display-1 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-variation-settings: "wdth" 116;
+  font-size: clamp(3rem, 10vw, 6.75rem);
+  line-height: 0.9;
+  letter-spacing: -0.035em;
+}
+@utility display-2 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-variation-settings: "wdth" 110;
+  font-size: clamp(2.25rem, 5.6vw, 3.9rem);
+  line-height: 0.98;
+  letter-spacing: -0.03em;
+}
+@utility display-3 {
+  font-family: var(--font-display);
+  font-weight: 750;
+  font-variation-settings: "wdth" 106;
+  font-size: clamp(1.75rem, 3.6vw, 2.5rem);
+  line-height: 1.04;
+  letter-spacing: -0.022em;
+}
+@utility display-4 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-variation-settings: "wdth" 104;
+  font-size: 1.375rem;
+  line-height: 1.15;
+  letter-spacing: -0.015em;
+}
+/* Expanded caps with wide tracking, as in "COMING SOON". */
+@utility display-caps {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-variation-settings: "wdth" 125;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+@utility lead {
+  font-family: var(--font-serif);
+  font-size: clamp(1.125rem, 2vw, 1.3125rem);
+  line-height: 1.5;
+  font-weight: 400;
+  color: var(--fg-soft);
+  font-optical-sizing: auto;
+}
+/* Mono survey label: metadata only. */
+@utility survey {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.6875rem;
+  line-height: 1.4;
+  font-feature-settings: "tnum" 1;
+}
+@utility tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------------------------------------------------------------------------
+   Surfaces
+   --------------------------------------------------------------------------- */
+
+/* Blueprint grid — landing hero only, fading toward the edges. */
+@utility plan-grid {
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 40px 40px;
+  background-position: -1px -1px;
+  mask-image: radial-gradient(ellipse 80% 70% at 50% 40%, #000 30%, transparent 100%);
+}
+
+@utility card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  box-shadow: inset 0 1px 0 var(--highlight);
+}
+@utility card-raised {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  box-shadow:
+    inset 0 1px 0 var(--highlight),
+    var(--shadow);
+}
+
+@utility field {
+  display: block;
+  width: 100%;
+  min-height: 3rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-control);
+  background: var(--surface);
+  padding-inline: 0.875rem;
+  font-size: 1rem;
+  color: var(--fg);
+  transition:
+    border-color 150ms,
+    box-shadow 150ms;
+  &::placeholder {
+    color: color-mix(in oklab, var(--muted) 75%, transparent);
+  }
+  &:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--accent) 22%, transparent);
+  }
+  &[aria-invalid="true"] {
+    border-color: var(--danger);
+  }
+}
+
+@utility prose-plan {
+  max-width: var(--container-reading);
+  font-size: 1.0625rem;
+  line-height: 1.7;
+  color: var(--fg-soft);
+  & p + p {
+    margin-top: 1em;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Motion (150–220ms state changes, nothing over 400ms)
+   --------------------------------------------------------------------------- */
+@keyframes corner-draw {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+@keyframes digit-roll {
+  from {
+    transform: translateY(-40%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+@keyframes live-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgb(242 166 38 / 0.55);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgb(242 166 38 / 0);
+  }
+}
+@keyframes go-glow {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 1px var(--accent),
+      0 0 24px -6px rgb(242 166 38 / 0.35);
+  }
+  50% {
+    box-shadow:
+      0 0 0 1px var(--accent),
+      0 0 36px -4px rgb(242 166 38 / 0.5);
+  }
+}
+@keyframes plot-trace {
+  from {
+    stroke-dashoffset: var(--len, 1000);
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-corner {
+  animation: corner-draw 220ms var(--ease-out-plot) both;
+}
+.animate-digit {
+  animation: digit-roll 180ms var(--ease-out-plot) both;
+}
+.animate-live {
+  animation: live-pulse 1.8s ease-in-out infinite;
+}
+.animate-go {
+  animation: go-glow 2.4s ease-in-out infinite;
+}
+.animate-fade-up {
+  animation: fade-up 220ms var(--ease-out-plot) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
