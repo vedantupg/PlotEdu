@@ -9,7 +9,8 @@ const liveSchema = z.object({
   NEXT_PUBLIC_SUPABASE_URL: z.url().startsWith("https://"),
   NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(20),
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(20),
-  NEXT_PUBLIC_SITE_URL: z.url(),
+  // Optional: falls back to Vercel system URLs (see lib/env.ts).
+  NEXT_PUBLIC_SITE_URL: z.url().optional(),
 });
 
 export type EnvReport = { mode: "live" | "demo"; problems: string[] };
