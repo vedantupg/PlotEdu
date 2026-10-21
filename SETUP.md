@@ -85,12 +85,12 @@ update public.profiles set role = 'admin' where email = '<kajal@…>';
 
 ## Environment variables
 
-| Name                                        | Where         | Notes                                       |
-| ------------------------------------------- | ------------- | ------------------------------------------- |
-| `NEXT_PUBLIC_SUPABASE_URL`                  | all           | Project URL                                 |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY`             | all           | Public anon key; RLS protects data          |
-| `SUPABASE_SERVICE_ROLE_KEY`                 | prod, preview | Server only: downloads, cron, calendar sync |
-| `NEXT_PUBLIC_SITE_URL`                      | prod          | Canonical URL for OAuth, emails, sitemap    |
-| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | prod          | Phase 3 — Calendar connection               |
-| `RESEND_API_KEY`                            | prod          | Phase 3 — email                             |
-| `CRON_SECRET`                               | prod          | Phase 3 — protects `/api/cron/*`            |
+| Name                                        | Where         | Notes                                                                                                                                                 |
+| ------------------------------------------- | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `NEXT_PUBLIC_SUPABASE_URL`                  | all           | Project URL                                                                                                                                           |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY`             | all           | Publishable key (`sb_publishable_…`) or legacy anon key; RLS protects data                                                                            |
+| `SUPABASE_SERVICE_ROLE_KEY`                 | prod, preview | Server only: downloads, cron, calendar sync. Use the **legacy `service_role` JWT**: Storage rejects the new `sb_secret_…` key ("Invalid Compact JWS") |
+| `NEXT_PUBLIC_SITE_URL`                      | prod          | Canonical URL for OAuth, emails, sitemap                                                                                                              |
+| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | prod          | Phase 3 — Calendar connection                                                                                                                         |
+| `RESEND_API_KEY`                            | prod          | Phase 3 — email                                                                                                                                       |
+| `CRON_SECRET`                               | prod          | Phase 3 — protects `/api/cron/*`                                                                                                                      |
