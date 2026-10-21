@@ -31,10 +31,14 @@ CI (`.github/workflows/ci.yml`) runs typecheck, lint, tests and a build on every
    npm run db:types                              # optional: generated DB types
    ```
 
+> Do not run a blind `supabase config push`: the CLI's local defaults differ from the hosted project
+> (MFA, email confirmation, storage) and would overwrite live settings. Change auth settings in the
+> dashboard; `supabase/config.toml` records the intended values.
+
 3. Dashboard → **Authentication → URL configuration**
-   - Site URL: `https://plotedu.in` (use the Vercel URL until the domain is live)
-   - Redirect URLs: `http://localhost:3000/auth/callback`, `https://plotedu.in/auth/callback`,
-     `https://*-<vercel-team>.vercel.app/auth/callback`
+   - Site URL: `https://plotedu.vercel.app` (switch to `https://plotedu.in` when the domain is live)
+   - Redirect URLs: `http://localhost:3000/auth/callback`, `https://plotedu.vercel.app/auth/callback`,
+     `https://plotedu.in/auth/callback`, `https://*-vedants-projects-cbef22c0.vercel.app/auth/callback`
 
 ## 3. Google sign-in (students)
 
